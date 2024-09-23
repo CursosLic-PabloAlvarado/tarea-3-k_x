@@ -15,13 +15,13 @@ function viewfreqresp(filename, fs=48000)
     title(sprintf('Diagrama de Polos y Ceros para %s', strrep(filename, '_', '\_')));
 
     %trabjar en la funcion que muestra la magnitud, fase, etc... (no usar bode)
-    f = logspace(0,4);
+    f = logspace(0,5);
     z=e.^(i*2*pi*f/fs);
     n=polyval(b,z);
     d=polyval(a,z);
     ft = n./d;
     absolute=20*log10(abs(ft));
-    argument=unwrap(arg(ft))*180/pi;
+    argument=arg(ft)*180/pi;
 
 
 
