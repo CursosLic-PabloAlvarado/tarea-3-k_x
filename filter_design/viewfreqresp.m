@@ -28,9 +28,9 @@ function viewfreqresp(filename, fs=48000)
     figure;
     semilogx(f,absolute);
     title(sprintf('Respuesta en magnitud para %s', strrep(filename, '_', '\_')));
-    xlabel('Frecuencia [dB]');
+    xlabel('Frecuencia [Hz]');
     ylabel('|H(F)| [dB]')
-    axis("normal plot")
+    axis('normal')
     xlim([1 fs/2]);
     ylim([-50 3]);
     grid on;
@@ -38,9 +38,9 @@ function viewfreqresp(filename, fs=48000)
     figure;
     semilogx(f,argument);
     title(sprintf('Respuesta en fase para %s', strrep(filename, '_', '\_')));
-    xlabel('Frecuencia [dB]');
+    xlabel('Frecuencia [Hz]');
     ylabel('\angleH(F) [°]')
-    axis("normal plot")
+    axis('normal')
     xlim([1 fs/2]);
     ylim([-360 360]);
     grid on;
