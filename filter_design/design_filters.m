@@ -1,4 +1,5 @@
 ########## Definición de variables ###############
+pkg signal load;
 n = 3;  % Orden del filtro
 Rp = 1;  % Rizado en banda de paso (dB)
 Rs = 50; % Atenuación en banda de rechazo (dB)
