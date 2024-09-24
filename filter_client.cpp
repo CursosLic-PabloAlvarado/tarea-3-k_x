@@ -39,10 +39,10 @@
 
 #include <cstring>
 
-passthrough_client::filter_client() : jack::client() {
+filter_client::filter_client() : jack::client() {
 }
 
-passthrough_client::~filter_client() {
+filter_client::~filter_client() {
 }
   
 /**
