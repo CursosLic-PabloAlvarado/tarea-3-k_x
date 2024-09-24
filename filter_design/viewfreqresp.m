@@ -15,7 +15,10 @@ function viewfreqresp(filename, fs=48000)
     title(sprintf('Diagrama de Polos y Ceros para %s', strrep(filename, '_', '\_')));
 
     %trabjar en la funcion que muestra la magnitud, fase, etc... (no usar bode)
-    f = logspace(0,5);
+    %definir fmin y fmax
+    fmin=10;
+    fmax=fs/2;
+    f = logspace(log10(fmin),log10(fmax),1000);
     z=e.^(i*2*pi*f/fs);
     n=polyval(b,z);
     d=polyval(a,z);
@@ -31,7 +34,7 @@ function viewfreqresp(filename, fs=48000)
     xlabel('Frecuencia [Hz]');
     ylabel('|H(F)| [dB]')
     axis('normal')
-    xlim([1 fs/2]);
+    xlim([fmin fs/2]);
     ylim([-50 3]);
     grid on;
 
@@ -41,7 +44,7 @@ function viewfreqresp(filename, fs=48000)
     xlabel('Frecuencia [Hz]');
     ylabel('\angleH(F) [°]')
     axis('normal')
-    xlim([1 fs/2]);
+    xlim([fmin fs/2]);
     ylim([-360 360]);
     grid on;
 end
