@@ -53,7 +53,7 @@
 #include <boost/program_options.hpp>
 
 #include "waitkey.h"
-#include "passthrough_client.h"
+#include "filter_client.h"
 
 #include "parse_filter.h"
 
@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
 
   
   try {
-    static passthrough_client client;
+    static filter_client client;
 
     typedef jack::client::sample_t sample_t;
     
