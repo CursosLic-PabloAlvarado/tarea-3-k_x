@@ -25,8 +25,10 @@ function viewfreqresp(filename, fs=48000)
     ft = n./d;
     absolute=20*log10(abs(ft));
     argument=arg(ft)*180/pi;
+    
+    mascara=0.<argument;
 
-
+    argument=argument-360.*mascara;
 
     figure;
     semilogx(f,absolute);
@@ -45,6 +47,6 @@ function viewfreqresp(filename, fs=48000)
     ylabel('\angleH(F) [°]')
     axis('normal')
     xlim([fmin fs/2]);
-    ylim([-360 360]);
+    ylim([-360 0]);
     grid on;
 end
