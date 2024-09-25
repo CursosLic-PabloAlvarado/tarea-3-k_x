@@ -1,6 +1,6 @@
 #include "biquad.h"
 #include <cstring>
-
+#include <iostream>
 biquad:: biquad() {}
 biquad::~biquad() {}
 
@@ -14,10 +14,11 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* const in, sample_t*
         *outptr = b0_ * (*inptr) + z1_;
         z1_ = b1_ * (*inptr) - a1_ * (*outptr) + z2_;
         z2_ = b2_ * (*inptr) - a2_ * (*outptr);
-
+        //std::cout<<b0_<<std::endl;
         ++inptr;
         ++outptr;
     }
+    return true;
 }
 
 void biquad::setCoefficients(const std::vector<sample_t>& coeffs) {
@@ -29,7 +30,7 @@ void biquad::setCoefficients(const std::vector<sample_t>& coeffs) {
     b1_ = coeffs[1];
     b2_ = coeffs[2];
 
-    // Comprobamos que el coeficiente a0 es aproximadamente 1.0
+    // // Comprobamos que el coeficiente a0 es aproximadamente 1.0
     
     a1_ = coeffs[4];
     a2_ = coeffs[5];
