@@ -35,12 +35,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _FILTER_CLIENT_H
-#define _FILTER_CLIENT_H
+#ifndef FILTER_CLIENT_H
+#define FILTER_CLIENT_H
 
 #include "jack_client.h"
-#include "biquad.h"
-#include <vector>
+#include "cascade.h"  // Incluir la clase Cascade
 
 class filter_client : public jack::client {
 public:
@@ -50,18 +49,18 @@ public:
     // Método para establecer el modo de funcionamiento (passthrough o filtrado)
     void setMode(char mode);
 
-    // Método para establecer los coeficientes del filtro
-    void setFilterCoefficients(const std::vector<sample_t>& coeffs);
+    // Método para establecer los coeficientes de filtro (ya sea uno o varios filtros biquad)
+    void setFilterCoefficients(const std::vector<std::vector<sample_t>>& coeffs);
 
-    // Método de procesamiento que es llamado por JACK en cada ciclo de audio
-    virtual bool process(jack_nframes_t nframes,
-                         const sample_t *const in,
-                         sample_t *const out) override;
+    // Procesa un bloque de muestras (override del cliente JACK)
+    virtual bool process(jack_nframes_t nframes, const sample_t* const in, sample_t* out) override;
 
 private:
     char set_mode_;  // 'p' para passthrough, 'f' para filtrado
-    biquad filter_;  // Instancia del filtro biquad
+    cascade* cascade_filter_;  // Puntero a cascada de filtros (uno o varios biquads)
+    //aquí usamos un puntero a cascade para que cuando se llame a filter_client y no queramos filtrar no cree un objeto 
+  
 };
 
-#endif  // _FILTER_CLIENT_H
+#endif  // FILTER_CLIENT_H
 

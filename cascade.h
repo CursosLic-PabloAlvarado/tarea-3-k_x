@@ -13,7 +13,7 @@ public:
     bool process(jack_nframes_t nframes, const sample_t* in, sample_t* out);
 
 private:
-    // Vector que contiene uno o más filtros biquad
+    // Vector de filtros biquad
     std::vector<biquad> filters_;
 };
 

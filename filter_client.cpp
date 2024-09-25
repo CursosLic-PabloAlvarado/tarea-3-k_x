@@ -38,38 +38,48 @@
 #include "filter_client.h"
 #include <cstring>
 
-filter_client::filter_client() : jack::client(), set_mode_('p') {  // Modo por defecto es passthrough
+filter_client::filter_client() : jack::client(), set_mode_('p'), cascade_filter_(nullptr) {
 }
 
 filter_client::~filter_client() {
+    if (cascade_filter_ != nullptr) {
+        delete cascade_filter_;
+    }
 }
 
+// Establece el modo de funcionamiento: passthrough ('p') o filtrado ('f')
 void filter_client::setMode(char mode) {
     set_mode_ = mode;
 }
 
-void filter_client::setFilterCoefficients(const std::vector<sample_t>& coeffs) {
-    filter_.setCoefficients(coeffs);  // Establece los coeficientes en la instancia de biquad
+// Establece los coeficientes de filtro (uno o varios filtros biquad)
+void filter_client::setFilterCoefficients(const std::vector<std::vector<sample_t>>& coeffs) {
+    // Si ya hay una cascada configurada, liberarla primero
+    if (cascade_filter_ != nullptr) {
+        delete cascade_filter_;
+    }
+
+    // Crear una nueva instancia de Cascade con los coeficientes
+    cascade_filter_ = new cascade(coeffs);
 }
 
-bool filter_client::process(jack_nframes_t nframes,
-                            const sample_t *const in,
-                            sample_t *const out) {
+// Procesa un bloque de muestras (override del cliente JACK)
+bool filter_client::process(jack_nframes_t nframes, const sample_t* const in, sample_t* out) {
     switch (set_mode_) {
-        case 'p':  // Passthrough: copia la entrada a la salida sin modificaciones
+        case 'p':  // Passthrough: copiar los datos de entrada a la salida
             std::memcpy(out, in, sizeof(sample_t) * nframes);
             break;
 
-        case 'f':  // Filtrado: usa el biquad para procesar las muestras
-            filter_.process(nframes, in, out);  // Llama al método process del filtro biquad
+        case 'f':  // Filtro: aplicar la cascada de filtros
+            if (cascade_filter_ != nullptr) {
+                cascade_filter_->process(nframes, in, out);  // Procesar con la cascada de filtros
+            }
             break;
 
-        default:  // Modo desconocido, por seguridad, hacemos passthrough
-            set_mode_='p';
-            //std::memcpy(out, in, sizeof(sample_t) * nframes);
+        default:  // Si el modo es desconocido, usar passthrough como protección
+            std::memcpy(out, in, sizeof(sample_t) * nframes);
             break;
     }
 
-    return true;  // Retorna true para indicar que el procesamiento fue exitoso
+    return true;  // Indicar que el procesamiento fue exitoso
 }
-

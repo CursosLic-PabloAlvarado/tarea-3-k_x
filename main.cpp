@@ -102,19 +102,19 @@ int main(int argc, char *argv[]) {
                 std::cout << "Adding file '" << f.c_str() << "' " << (ok ? "succeeded" : "failed") << std::endl;
             }
         }
-
         if (vm.count("coeffs")) {
             filter_coefs = parse_filter<sample_t>(filter_file);
-            if (filter_coefs.empty() || filter_coefs[0].size() != 6) {
-                throw std::runtime_error("Invalid filter coefficients");
-            }
+        if (filter_coefs.empty() || filter_coefs[0].size() != 6) {
+            throw std::runtime_error("Invalid filter coefficients");
+         }
 
-            // Asumimos que solo estamos usando el primer conjunto de coeficientes
-            std::cout << "Loaded " << filter_coefs.size() << " 2nd order filters from " << filter_file << std::endl;
+        std::cout << "Loaded " << filter_coefs.size() << " 2nd order filters from " << filter_file << std::endl;
 
-            // Pasamos los coeficientes del primer filtro biquad al cliente
-            client.setFilterCoefficients(filter_coefs[0]);  // Usamos el primer conjunto de coeficientes ara la prueba de segundo orden
+        // Pasar los coeficientes a filter_client (pueden ser uno o varios conjuntos)
+        client.setFilterCoefficients(filter_coefs);
         }
+
+
 
         if (client.init() != jack::client_state::Running) {
             throw std::runtime_error("Could not initialize the JACK client");
