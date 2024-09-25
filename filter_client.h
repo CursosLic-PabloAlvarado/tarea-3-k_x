@@ -38,32 +38,30 @@
 #ifndef _FILTER_CLIENT_H
 #define _FILTER_CLIENT_H
 
-
 #include "jack_client.h"
+#include "biquad.h"
+#include <vector>
 
-/**
- * Jack client class
- *
- * This class wraps some basic jack functionality.
- */
 class filter_client : public jack::client {
-    
 public:
-  // typedef jack::client::sample_t sample_t;
-  
-  /**
-   * The default constructor performs some basic connections.
-   */
-  filter_client();
-  ~filter_client();
+    filter_client();
+    ~filter_client();
 
-  /**
-   * Passthrough functionality
-   */
-  virtual bool process(jack_nframes_t nframes,
-                       const sample_t *const in,
-                       sample_t *const out) override;
+    // Método para establecer el modo de funcionamiento (passthrough o filtrado)
+    void setMode(char mode);
+
+    // Método para establecer los coeficientes del filtro
+    void setFilterCoefficients(const std::vector<sample_t>& coeffs);
+
+    // Método de procesamiento que es llamado por JACK en cada ciclo de audio
+    virtual bool process(jack_nframes_t nframes,
+                         const sample_t *const in,
+                         sample_t *const out) override;
+
+private:
+    char set_mode_;  // 'p' para passthrough, 'f' para filtrado
+    biquad filter_;  // Instancia del filtro biquad
 };
 
+#endif  // _FILTER_CLIENT_H
 
-#endif

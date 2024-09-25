@@ -129,6 +129,8 @@ int main (int argc, char *argv[])
 
     // keep running until stopped by the user
     std::cout << "Press x key to exit" << std::endl;
+    //.......setmode......///
+    char set_mode = 'q';
 
     int key = -1;
     bool go_away=false;
@@ -140,6 +142,10 @@ int main (int argc, char *argv[])
           go_away=true;
           std::cout << "Finishing..." << std::endl;
         } break;
+
+        case 'p':{
+          set_mode='p';
+        }break;
         case 'r': {
 
           if (vm.count("files")) {
@@ -156,6 +162,13 @@ int main (int argc, char *argv[])
           
           std::cout << "Repeat playing files" << std::endl;
         } break;
+
+        case 'f': {
+          set_mode = 'f';
+
+          std::cout << "Filtrando audio" << std::endl;
+
+        }break;
         default: {
           if (key>32) {
             std::cout << "Key " << char(key) << " pressed" << std::endl;

@@ -36,27 +36,40 @@
  */
 
 #include "filter_client.h"
-
 #include <cstring>
 
-filter_client::filter_client() : jack::client() {
+filter_client::filter_client() : jack::client(), set_mode_('p') {  // Modo por defecto es passthrough
 }
 
 filter_client::~filter_client() {
 }
-  
-/**
- * The process callback for this JACK application is called in a
- * special realtime thread once for each audio cycle.
- *
- * This client does nothing more than copy data from its input
- * port to its output port. It will exit when stopped by 
-   * the user (e.g. using Ctrl-C on a unix-ish operating system)
-   */
-bool filter_client::process(jack_nframes_t nframes,
-                                 const sample_t *const in,
-                                 sample_t *const out) {
-  memcpy (out, in, sizeof(sample_t)*nframes);
-  return true;
+
+void filter_client::setMode(char mode) {
+    set_mode_ = mode;
 }
-  
+
+void filter_client::setFilterCoefficients(const std::vector<sample_t>& coeffs) {
+    filter_.setCoefficients(coeffs);  // Establece los coeficientes en la instancia de biquad
+}
+
+bool filter_client::process(jack_nframes_t nframes,
+                            const sample_t *const in,
+                            sample_t *const out) {
+    switch (set_mode_) {
+        case 'p':  // Passthrough: copia la entrada a la salida sin modificaciones
+            std::memcpy(out, in, sizeof(sample_t) * nframes);
+            break;
+
+        case 'f':  // Filtrado: usa el biquad para procesar las muestras
+            filter_.process(nframes, in, out);  // Llama al método process del filtro biquad
+            break;
+
+        default:  // Modo desconocido, por seguridad, hacemos passthrough
+            set_mode_='p';
+            //std::memcpy(out, in, sizeof(sample_t) * nframes);
+            break;
+    }
+
+    return true;  // Retorna true para indicar que el procesamiento fue exitoso
+}
+

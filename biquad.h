@@ -2,32 +2,30 @@
 #define BIQUAD_H
 
 #include <vector>
-#include <jack/jack.h> 
+#include <jack/jack.h>
+#include <cassert>
+#include <cmath>  // Para std::abs
+
+//typedef float sample_t; 
 
 class biquad {
 private:
-    //coeficientes:
+    // Coeficientes del filtro
     sample_t b0_, b1_, b2_, a1_, a2_;
-
+    // Variables de estado
     sample_t z1_, z2_;
+    char set_mode_;
+
 public:
-    //constructor, podemos en la siguiente linea inicializar los estados y los coeficientes en 0.
-    biquad();
+     biquad();
     ~biquad();
-    void setCoefficients(sample_t b0, sample_t b1, sample_t b2, sample_t a1, sample_t a2) {
-        z1_= 0;
-        z2_ = 0;
+    void setMode(char mode);
 
-    }
+    // Método para inicializar los coeficientes
+    void setCoefficients(const std::vector<sample_t>& coeffs);
 
+    // Método para procesar un bloque de muestras
+    void process(jack_nframes_t nframes, const sample_t* const in, sample_t* out);
+};
 
-    void biquad::process(jack_nframes_t nframes, const sample_t* const in, sample_t* out){
-
-        //posible inline... to be continue
-
-    }
-
-    //inline para un sola muestra
-
-
-}; #endif 
+#endif  // BIQUAD_H
