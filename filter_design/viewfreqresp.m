@@ -37,7 +37,7 @@ function viewfreqresp(filename, fs=48000)
     ylabel('|H(F)| [dB]')
     axis('normal')
     xlim([fmin fs/2]);
-    ylim([-50 3]);
+    ylim([-100 3]);
     grid on;
 
     figure;
