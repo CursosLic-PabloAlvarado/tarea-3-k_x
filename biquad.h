@@ -6,8 +6,7 @@
 #include <cassert>
 #include <cmath>  // Para std::abs
 
-
-class biquad : public jack::client   { //hereda de jack
+class biquad : public jack::client {
 private:
     // Coeficientes del filtro
     sample_t b0_, b1_, b2_, a1_, a2_;
@@ -16,8 +15,25 @@ private:
     char set_mode_;
 
 public:
-     biquad();
+    // Constructor por defecto
+    biquad();
+
+    // Destructor
     ~biquad();
+
+    // Constructor de copia
+    biquad(const biquad& other);
+
+    // Operador de asignación por copia
+    biquad& operator=(const biquad& other);
+
+    // Constructor de movimiento
+    biquad(biquad&& other) noexcept;
+
+    // Operador de asignación por movimiento
+    biquad& operator=(biquad&& other) noexcept;
+
+    // Método para establecer el modo de operación
     void setMode(char mode);
 
     // Método para inicializar los coeficientes
