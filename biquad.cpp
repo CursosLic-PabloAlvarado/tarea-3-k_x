@@ -4,7 +4,7 @@
 biquad:: biquad() {}
 biquad::~biquad() {}
 
-void biquad::process(jack_nframes_t nframes, const sample_t* const in, sample_t* out) {
+bool biquad::process(jack_nframes_t nframes, const sample_t* const in, sample_t* out) {
     const sample_t *inptr = in;
     const sample_t *const end_ptr = in + nframes;
     sample_t *outptr = out;
