@@ -1,4 +1,5 @@
 function listen_filter(filter_filename, filename_sound, fs=48000)
+    pkg load signal;
     % Cargar la matriz SOS desde el archivo
     Data = load(filter_filename, "SOS"); % Cargar solo la matriz SOS
 
