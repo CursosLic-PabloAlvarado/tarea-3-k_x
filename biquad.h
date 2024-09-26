@@ -21,18 +21,6 @@ public:
     // Destructor
     ~biquad();
 
-    // Constructor de copia
-    biquad(const biquad& other);
-
-    // Operador de asignación por copia
-    biquad& operator=(const biquad& other);
-
-    // Constructor de movimiento
-    biquad(biquad&& other) noexcept;
-
-    // Operador de asignación por movimiento
-    biquad& operator=(biquad&& other) noexcept;
-
     // Método para establecer el modo de operación
     void setMode(char mode);
 
