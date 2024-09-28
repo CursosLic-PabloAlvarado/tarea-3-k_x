@@ -16,3 +16,16 @@ sources = files('main.cpp', 'jack_client.cpp', 'filter_client.cpp',
 
 # Incluir las dependencias y la ruta corregida
 executable('tarea3', sources, dependencies: all_deps, include_directories: [xsimd_inc])
+
+
+google_benchmark_dep = dependency('benchmark', required: true)
+jack_dep = dependency('jack')
+sndfile_dep = dependency('sndfile')
+xsimd_inc = include_directories('externo')  # Apunta a 'externo', ya que 'xsimd.hpp' está en 'externo/xsimd/'
+
+benchmark_tarea3 = executable('benchmark_tarea3',                                 
+                               files('benchmark.cpp', 'biquad.cpp', 'cascade.cpp', 'jack_client.cpp','sndfile_thread.cpp'),                
+                               dependencies: [boost_dep, google_benchmark_dep, jack_dep, sndfile_dep], include_directories: [xsimd_inc],     
+                               cpp_args: ['-std=c++20'],                          
+                               build_by_default: false  
+)
