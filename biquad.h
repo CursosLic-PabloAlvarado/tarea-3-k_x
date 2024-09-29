@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cmath>  // Para std::abs
 
+
+
 class biquad : public jack::client {
 public:
     // Coeficientes del filtro
@@ -27,8 +29,20 @@ public:
     // Método para inicializar los coeficientes
     void setCoefficients(const std::vector<sample_t>& coeffs);
 
-    // Método para procesar un bloque de muestras
-    bool process(jack_nframes_t nframes, const sample_t* const in, sample_t* out);
+
+    inline bool process(jack_nframes_t nframes, const sample_t* in, sample_t* out){
+    *out = *in*b0_+z1_;
+    z1_=*in*b1_-a1_**out+z2_;
+    z2_=*in*b2_-a2_**out;
+};
+
+    inline sample_t processSample(sample_t input){
+        sample_t output = input*b0_+z1_;
+        z1_=input*b1_-a1_*output+z2_;
+        z2_=input*b2_-a2_*output;
+};   
+
+    
 };
 
 #endif  // BIQUAD_H
