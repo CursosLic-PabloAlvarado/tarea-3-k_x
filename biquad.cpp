@@ -43,5 +43,5 @@ void biquad::setCoefficients(const std::vector<sample_t>& coeffs) {
     // Reiniciamos el estado del filtro
     z1_ = 0.0f;
     z2_ = 0.0f;
-    std::cout << "Coefficients: " << b0_ << " " << b1_ << " " << b2_ << " " << a1_ << " " << a2_ << std::endl;
+    //std::cout << "Coefficients: " << b0_ << " " << b1_ << " " << b2_ << " " << a1_ << " " << a2_ << std::endl;
 }
