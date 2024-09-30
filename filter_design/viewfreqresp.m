@@ -25,12 +25,12 @@ function viewfreqresp(filename, fs=48000)
     ft = n./d;
     absolute=20*log10(abs(ft));
     argument=arg(ft)*180/pi;
-    
+
     mascara=0.<argument;
 
     argument=argument-360.*mascara;
-
     figure;
+    subplot(2,1,1);
     semilogx(f,absolute);
     title(sprintf('Respuesta en magnitud para %s', strrep(filename, '_', '\_')));
     xlabel('Frecuencia [Hz]');
@@ -40,7 +40,7 @@ function viewfreqresp(filename, fs=48000)
     ylim([-100 3]);
     grid on;
 
-    figure;
+    subplot(2,1,2);
     semilogx(f,argument);
     title(sprintf('Respuesta en fase para %s', strrep(filename, '_', '\_')));
     xlabel('Frecuencia [Hz]');
