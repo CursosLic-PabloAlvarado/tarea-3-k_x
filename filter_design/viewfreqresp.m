@@ -3,7 +3,7 @@ function viewfreqresp(filename, fs=48000)
     close all;
     % Cargar la matriz SOS desde el archivo
     Data = load(filename, "SOS");
-
+    carpeta = '../../figuras_octave';
     % Recuperar la matriz SOS
     SOS = Data.SOS;
 
@@ -12,7 +12,10 @@ function viewfreqresp(filename, fs=48000)
     % Mostrar el diagrama de polos y ceros
     figure;
     zplane(b, a); %basta con usar esto
-    title(sprintf('Diagrama de Polos y Ceros para %s', strrep(filename, '_', '\_')));
+    nombre = sprintf('Diagrama de Polos y Ceros para %s', strrep(filename, '_', '\_'));
+    title(nombre);
+    nombre_archivo=fullfile(carpeta, nombre);
+    print(nombre_archivo,'-dpng');
 
     %trabjar en la funcion que muestra la magnitud, fase, etc... (no usar bode)
     %definir fmin y fmax
@@ -27,7 +30,7 @@ function viewfreqresp(filename, fs=48000)
     argument=arg(ft)*180/pi;
 
     mascara=0.<argument;
-
+    nombre2 = sprintf('Respuesta en frecuencia para %s', strrep(filename, '_', '\_'));
     argument=argument-360.*mascara;
     figure;
     subplot(2,1,1);
@@ -49,4 +52,6 @@ function viewfreqresp(filename, fs=48000)
     xlim([fmin fs/2]);
     ylim([-360 0]);
     grid on;
+    nombre_archivo=fullfile(carpeta,nombre2);
+    print(nombre_archivo,'-dpng');
 end
