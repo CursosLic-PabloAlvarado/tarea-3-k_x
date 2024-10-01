@@ -61,7 +61,7 @@ static void BM_Biquad_Process(benchmark::State& state) {
   float output[size];
 
   for (auto _ : state) {
-    dut.process(size, input, output);
+    output[0] = dut.processSample(input[0]);
   }
   
   state.SetItemsProcessed(size);  // Optional: Report number of items processed

@@ -12,8 +12,8 @@ function viewfreqresp(filename, fs=48000)
     % Mostrar el diagrama de polos y ceros
     figure;
     zplane(b, a); %basta con usar esto
-    nombre = sprintf('Diagrama de Polos y Ceros para %s', strrep(filename, '_', '\_'));
-    title(nombre);
+    nombre = sprintf('Diagrama de Polos y Ceros para %s', strrep(filename,'.mat', '.png'));
+    title(sprintf('Diagrama de Polos y Ceros para %s', strrep(filename, '_', '\_')));
     nombre_archivo=fullfile(carpeta, nombre);
     print(nombre_archivo,'-dpng');
 
@@ -30,7 +30,7 @@ function viewfreqresp(filename, fs=48000)
     argument=arg(ft)*180/pi;
 
     mascara=0.<argument;
-    nombre2 = sprintf('Respuesta en frecuencia para %s', strrep(filename, '_', '\_'));
+    nombre2 = sprintf('Respuesta en frecuencia para %s', strrep(filename, '.mat', '.png'));
     argument=argument-360.*mascara;
     figure;
     subplot(2,1,1);
