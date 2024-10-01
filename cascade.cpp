@@ -14,10 +14,10 @@ cascade::cascade(const std::vector<std::vector<sample_t>>& filter_coeffs) {
 bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
    const sample_t *inptr=in;
    sample_t *outptr=out;
-
    const sample_t *const end_ptr=in+nframes;
     // Copiar la entrada al buffer intermedio
-    while (inptr  != end_ptr) {
+    while (inptr + 8 <= end_ptr) {
+        for (size_t i = 0; i < 8; ++i) {
             sample_t sample = *inptr++;
 
             // Aplicamos cada filtro biquad en cascada
@@ -26,26 +26,8 @@ bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out)
             }
 
             *outptr++ = sample;
-
-            sample = *inptr++;
-            for (auto& filter : filters_) {
-                sample=filter->processSample(sample);
-            }
-            *outptr++ = sample;
-
-            sample = *inptr++;
-            for (auto& filter : filters_) {
-                sample=filter->processSample(sample);
-            }
-            *outptr++ = sample;
-
-            sample = *inptr++;
-            for (auto& filter : filters_) {
-                sample=filter->processSample(sample);
-            }
-            *outptr++ = sample;
         }
-    
+    }
 
     // Procesamos las muestras restantes
 

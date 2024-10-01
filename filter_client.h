@@ -40,7 +40,7 @@
 
 #include "jack_client.h"
 #include "cascade.h"  // Incluir la clase Cascade
-
+#include "biquad.h"
 class filter_client : public jack::client {
 public:
     filter_client();
@@ -58,6 +58,8 @@ public:
 private:
     char set_mode_;  // 'p' para passthrough, 'f' para filtrado
     cascade* cascade_filter_;  // Puntero a cascada de filtros (uno o varios biquads)
+    biquad* biquad_filter_; //puntero a biquad de prueba
+
     //aquí usamos un puntero a cascade para que cuando se llame a filter_client y no queramos filtrar no cree un objeto 
   
 };
