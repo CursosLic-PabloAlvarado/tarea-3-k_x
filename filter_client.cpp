@@ -79,7 +79,7 @@ void filter_client::setFilterCoefficients(const std::vector<std::vector<sample_t
 
     // Crear un filtro biquad para el modo de prueba con coeficientes predeterminados (puedes ajustarlos según tu necesidad)
     biquad_filter_ = new biquad;
-    biquad_filter_->setCoefficients({0.2929, 0.5858, 0.2929, -0.0000, 0.1716});
+    biquad_filter_->setCoefficients({0.2929, 0.5858, 0.2929,1.0, -0.0000, 0.1716});
 }
 
 // Procesa un bloque de muestras (override del cliente JACK)
