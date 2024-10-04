@@ -52,7 +52,7 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
     while (i + simd_size <= nframes) {
         // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
-        X_avx = _mm256_set_ps(in[i], in[i+1], in[i+2], in[i+3], z1_, z2_);
+      __m256 X_avx = _mm256_set_ps(0.0f, 0.0f, z2_, z1_, in[i+3], in[i+2], in[i+1], in[i]);
 
         // Calcular las salidas y[n], y[n+1], y[n+2], y[n+3] como producto de A * X
         __m256 y_avx = _mm256_add_ps(
