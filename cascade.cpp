@@ -11,28 +11,28 @@ cascade::cascade(const std::vector<std::vector<sample_t>>& filter_coeffs) {
 }
 
 // Procesar el bloque de datos utilizando la función `process` con SIMD optimizado
-bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
-    std::vector<sample_t> intermediate_buffer_1(nframes); // Buffer intermedio para las muestras procesadas
-    std::vector<sample_t> intermediate_buffer_2(nframes); // Otro buffer para la salida temporal
+// bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
+//     std::vector<sample_t> intermediate_buffer_1(nframes); // Buffer intermedio para las muestras procesadas
+//     std::vector<sample_t> intermediate_buffer_2(nframes); // Otro buffer para la salida temporal
 
-    // Copiar la entrada al buffer intermedio para el primer filtro
-    std::memcpy(intermediate_buffer_1.data(), in, sizeof(sample_t) * nframes);
+//     // Copiar la entrada al buffer intermedio para el primer filtro
+//     std::memcpy(intermediate_buffer_1.data(), in, sizeof(sample_t) * nframes);
 
-    // Procesar a través de cada biquad en cascada
-    for (auto& filter : filters_) {
-        filter->process(nframes, intermediate_buffer_1.data(), intermediate_buffer_2.data());  // Usar SIMD para procesar todo el bloque
+//     // Procesar a través de cada biquad en cascada
+//     for (auto& filter : filters_) {
+//         filter->process(nframes, intermediate_buffer_1.data(), intermediate_buffer_2.data());  // Usar SIMD para procesar todo el bloque
 
-        // Intercambiar los buffers para la siguiente etapa del filtro
-        std::swap(intermediate_buffer_1, intermediate_buffer_2);
-    }
+//         // Intercambiar los buffers para la siguiente etapa del filtro
+//         std::swap(intermediate_buffer_1, intermediate_buffer_2);
+//     }
 
-    // Copiar el resultado final al buffer de salida
-    std::memcpy(out, intermediate_buffer_1.data(), sizeof(sample_t) * nframes);
+//     // Copiar el resultado final al buffer de salida
+//     std::memcpy(out, intermediate_buffer_1.data(), sizeof(sample_t) * nframes);
 
-    return true;
-}
+//     return true;
+// }
 
-/*
+
 // Procesar el bloque de datos utilizando loop unrolling (8 muestras por iteración)
 bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
    const sample_t *inptr=in;
@@ -68,4 +68,4 @@ bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out)
     return true;
 }
 
-*/
+
