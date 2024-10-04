@@ -51,41 +51,28 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
     while (i + simd_size <= nframes) {
         // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
-        X_avx = _mm256_set_ps(in[i], in[i+2], in[i+3],in[i+4],z1_,z2_,0.0f,0.0f);
+        X_avx = _mm256_set_ps(z2_, z1_, in[i+3], in[i+2], in[i+1], in[i], 0.0f, 0.0f);
 
         // Multiplicar la primera fila de A por X
         __m256 result1 = _mm256_mul_ps(A_row_1, X_avx);
-        __m256 sum1 = _mm256_hadd_ps(result1, result1);
-        sum1 = _mm256_hadd_ps(sum1, sum1);
-        float sum1_high = _mm_cvtss_f32(_mm256_extractf128_ps(sum1, 1));
-        float sum1_low = _mm_cvtss_f32(_mm256_castps256_ps128(sum1));
-        out[i] = sum1_high + sum1_low;
-        //
-        __m256 result2 = _mm256_mul_ps(A_row_2, X_avx);
-        __m256 sum2 = _mm256_hadd_ps(result2, result2);
-        sum2 = _mm256_hadd_ps(sum1, sum1);
-        float sum2_high = _mm_cvtss_f32(_mm256_extractf128_ps(sum2, 1));
-        float sum2_low = _mm_cvtss_f32(_mm256_castps256_ps128(sum2));
-        out[i+1] = sum2_high + sum2_low;
-        //
-        __m256 result3 = _mm256_mul_ps(A_row_3, X_avx);
-        __m256 sum3 = _mm256_hadd_ps(result3, result3);
-        sum3 = _mm256_hadd_ps(sum3, sum3);
-        float sum3_high = _mm_cvtss_f32(_mm256_extractf128_ps(sum3, 1));
-        float sum3_low = _mm_cvtss_f32(_mm256_castps256_ps128(sum3));
-        out[i+2] = sum3_high + sum3_low;
-        //
-        __m256 result4 = _mm256_mul_ps(A_row_4, X_avx);
-        __m256 sum4 = _mm256_hadd_ps(result4, result4);
-        sum4 = _mm256_hadd_ps(sum4, sum4);
-        float sum4_high = _mm_cvtss_f32(_mm256_extractf128_ps(sum4, 1));
-        float sum4_low = _mm_cvtss_f32(_mm256_castps256_ps128(sum4));
-        out[i+3] = sum4_high + sum4_low;
+        float sum1 = result1[0] + result1[1] + result1[2] + result1[3];  // Suma manual
+        out[i] = sum1;
         
+        __m256 result2 = _mm256_mul_ps(A_row_2, X_avx);
+        float sum2 = result2[0] + result2[1] + result2[2] + result2[3];
+        out[i+1] = sum2;
+        
+        __m256 result3 = _mm256_mul_ps(A_row_3, X_avx);
+        float sum3 = result3[0] + result3[1] + result3[2] + result3[3];
+        out[i+2] = sum3;
+        
+        __m256 result4 = _mm256_mul_ps(A_row_4, X_avx);
+        float sum4 = result4[0] + result4[1] + result4[2] + result4[3];
+        out[i+3] = sum4;
 
         // Actualizar los estados intermedios (z1_, z2_)
-        z1_ = in[i+3];  // último valor de la entrada
-        z2_ = out[i];   // último valor de la salida
+        z1_ = b1_ * in[i+3] - a1_ * out[i+3] + z2_;
+        z2_ = b2_ * in[i+3] - a2_ * out[i+3];
 
         i += simd_size;  // de 4 en 4
     }
@@ -99,6 +86,7 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
     return true;
 }
+
 
 
 
