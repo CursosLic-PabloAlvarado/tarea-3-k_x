@@ -41,6 +41,22 @@ void biquad::setCoefficients(const std::vector<sample_t>& coeffs) {
     z2_ = 0.0f;
 }
 
+float horizontal_sum_avx(__m256 vec) {
+    // Suma los elementos adyacentes dentro de cada mitad de 128 bits
+    __m128 low = _mm256_castps256_ps128(vec); // Baja parte de vec (4 floats)
+    __m128 high = _mm256_extractf128_ps(vec, 1); // Alta parte de vec (4 floats)
+    
+    // Suma las dos mitades
+    __m128 sum128 = _mm_add_ps(low, high);
+
+    // Realiza la suma horizontal en los 4 elementos de sum128
+    sum128 = _mm_hadd_ps(sum128, sum128); // Suma pares de elementos
+    sum128 = _mm_hadd_ps(sum128, sum128); // Repite la suma
+
+    // Devuelve el valor final como float
+    return _mm_cvtss_f32(sum128);
+}
+
 // Método para procesar un bloque de datos con AVX
 bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
     size_t simd_size = 4;  // Procesamos 4 muestras a la vez
@@ -51,37 +67,31 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
     while (i + simd_size <= nframes) {
         // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
-        X_avx = _mm256_set_ps(z2_, z1_, in[i+3], in[i+2], in[i+1], in[i], 0.0f, 0.0f);
+        X_avx = _mm256_set_ps(in[i], in[i+1], in[i+2], in[i+3],z1_,z2_, 0.0f, 0.0f);
 
         // Multiplicar la primera fila de A por X
         __m256 result1 = _mm256_mul_ps(A_row_1, X_avx);
-        float sum1 = result1[0] + result1[1] + result1[2] + result1[3];  // Suma manual
+        float sum1 = horizontal_sum_avx(result1);
         out[i] = sum1;
         
         __m256 result2 = _mm256_mul_ps(A_row_2, X_avx);
-        float sum2 = result2[0] + result2[1] + result2[2] + result2[3];
+        float sum2 = horizontal_sum_avx(result2);
         out[i+1] = sum2;
-        
+        std::cout<<out[i+1]<<std::endl;
         __m256 result3 = _mm256_mul_ps(A_row_3, X_avx);
-        float sum3 = result3[0] + result3[1] + result3[2] + result3[3];
-        out[i+2] = sum3;
+        out[i+2] = horizontal_sum_avx(result3);
         
         __m256 result4 = _mm256_mul_ps(A_row_4, X_avx);
-        float sum4 = result4[0] + result4[1] + result4[2] + result4[3];
-        out[i+3] = sum4;
-
+        float sum3=horizontal_sum_avx(result4);
+        out[i+3] = sum3;
+        
         // Actualizar los estados intermedios (z1_, z2_)
-        z1_ = b1_ * in[i+3] - a1_ * out[i+3] + z2_;
-        z2_ = b2_ * in[i+3] - a2_ * out[i+3];
+        //z1_ = b1_ * in[i+3] - a1_ * sum3 + z2_;
+        //z2_ = b2_ * in[i+3] - a2_ * out[i+3];
+
+        std::cout<<"z1 "<<out[i+3]<<" z2 "<<z2_<<std::endl;
 
         i += simd_size;  // de 4 en 4
-    }
-
-    // Procesar cualquier muestra restante de forma escalar
-    for (; i < nframes; ++i) {
-        out[i] = b0_ * in[i] + z1_;
-        z1_ = b1_ * in[i] - a1_ * out[i] + z2_;
-        z2_ = b2_ * in[i] - a2_ * out[i];
     }
 
     return true;

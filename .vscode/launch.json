@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/debug/tarea3",
-            "args": ["-f","./../white_noise", "-c","./filter_design/butter_bandpass.mat"],
+            "args": ["-f","../white_noise.wav", "-c","../filter_design/butter_bandpass.mat"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

@@ -29,23 +29,30 @@ C=[b0 0 0 0 1 0;
 
 
 
-x=[1 0 0 0]
+x=[1 1 1 0]
 tic
-y=C*[x 0 0]'
+
+y=C*[x 1 2]'
+v=zeros(1,4);
+for n =4:40:4
+  y=[y C*[v 1 2]'];
+end
 time1=toc;
 
 stem(y)
 
 ##filtro normal
-w1=0;
-w2=0;
+w1=1;
+w2=2;
 tic
+x = [x zeros(1, 40 - length(x))];
+
 for n = 1:4  % Comienza en n=2 para evitar índice negativo en n-1
 
     % Implementación de las ecuaciones
     w(n) = b0 * x(n) + w1;               % Cálculo de y[n]
-    w1 = b1 * x(n) - a1 * y(n) + w2;  % Cálculo de w1[n]
-    w2 = b2 * x(n) - a2 * y(n);              % Cálculo de w2[n]
+    w1 = b1 * x(n) - a1 * w(n) + w2;  % Cálculo de w1[n]
+    w2 = b2 * x(n) - a2 * w(n);              % Cálculo de w2[n]
 
 end
 time2=toc;
