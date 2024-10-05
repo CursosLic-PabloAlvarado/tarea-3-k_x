@@ -1,4 +1,5 @@
 close all;
+clear;
 ## coeficientes del filtro
 b0=0.2929
 b1=0.5858
@@ -25,40 +26,53 @@ j = a1^2-a2; # z2
 C=[b0 0 0 0 1 0;
   a b0 0 0 -a1 1;
   b c b0 0 d -a1;
-  e f h b0 i j]
+  e f h b0 i j];
+
+z1=0;
+z2=0;
+
+x=[1 1 1 0 zeros(1,36)];
+
+
+y=[];
+n=1;
+
+while n <=40
+  bv=[x(n:n+3) z1 z2].';
+  y=[y ;C*bv];
+
+  %Estados siguientes
+  z1=b1*x(n+3)-a1*y(n+3)+b2*x(n+2)-a2*y(n+2);
+  z2=b2*x(n+3)-a2*y(n+3);
 
 
 
-x=[1 1 1 0]
-tic
+  n=n+4;
 
-y=C*[x 1 2]'
-v=zeros(1,4);
-for n =4:40:4
-  y=[y C*[v 1 2]'];
+
 end
-time1=toc;
 
-stem(y)
+
+stem(y);
 
 ##filtro normal
-w1=1;
-w2=2;
+w1=0;
+w2=0;
 tic
 x = [x zeros(1, 40 - length(x))];
 
-for n = 1:4  % Comienza en n=2 para evitar Ã­ndice negativo en n-1
+for n = 1:40  % Comienza en n=2 para evitar ¡ndice negativo en n-1
 
-    % ImplementaciÃ³n de las ecuaciones
-    w(n) = b0 * x(n) + w1;               % CÃ¡lculo de y[n]
-    w1 = b1 * x(n) - a1 * w(n) + w2;  % CÃ¡lculo de w1[n]
-    w2 = b2 * x(n) - a2 * w(n);              % CÃ¡lculo de w2[n]
+    % Implementaci¢n de las ecuaciones
+    w(n) = b0 * x(n) + w1;               % C lculo de y[n]
+    w1 = b1 * x(n) - a1 * w(n) + w2;  % C lculo de w1[n]
+    w2 = b2 * x(n) - a2 * w(n);              % C lculo de w2[n]
 
 end
-time2=toc;
-w
+
+w=w'
+x=x';
 figure;
 stem(w)
-time1
-time2
+
 

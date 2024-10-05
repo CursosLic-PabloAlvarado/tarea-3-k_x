@@ -86,8 +86,10 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
         out[i+3] = sum3;
         
         // Actualizar los estados intermedios (z1_, z2_)
-        //z1_ = b1_ * in[i+3] - a1_ * sum3 + z2_;
-        //z2_ = b2_ * in[i+3] - a2_ * out[i+3];
+        
+        z1_ = b1_ * in[i+3] - a1_ * sum3 + b2_ * in[i+2] - a2_ * out[i+2];
+        z2_ = b2_ * in[i+3] - a2_ * out[i+3];
+        
 
         std::cout<<"z1 "<<out[i+3]<<" z2 "<<z2_<<std::endl;
 
