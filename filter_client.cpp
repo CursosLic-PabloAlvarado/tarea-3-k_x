@@ -68,11 +68,6 @@ void filter_client::setFilterCoefficients(const std::vector<std::vector<sample_t
         cascade_filter_ = nullptr;
     }
 
-    // Si ya hay un filtro biquad, liberarlo primero
-    // if (biquad_filter_ != nullptr) {
-    //     delete biquad_filter_;
-    //     biquad_filter_ = nullptr;
-    // }
 
     // Crear una nueva instancia de Cascade con los coeficientes
     cascade_filter_ = new cascade(coeffs);
@@ -103,10 +98,12 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t* const in, sa
 
                 while (inptr != end_ptr) {
                     // Procesar cada muestra individualmente con el biquad
-                    sample_t sample = biquad_filter_->processSample(*inptr);
-                    *outptr = sample;
-                    ++inptr;
-                    ++outptr;
+                    std::array<sample_t,4> sample = biquad_filter_->processSample({*inptr,*(inptr+1),*(inptr+2),*(inptr+3)});
+                    *outptr++ = sample[0];
+                    *outptr++ = sample[1];
+                    *outptr++ = sample[2];
+                    *outptr++ = sample[3];
+                    inptr=inptr+4;
                 }
             }
             break;

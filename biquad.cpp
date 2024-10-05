@@ -98,9 +98,30 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
 
 // Método para procesar una sola muestra
-sample_t biquad::processSample(sample_t input) {
-    sample_t output = input * b0_ + z1_;
-    z1_ = input * b1_ - a1_ * output + z2_;
-    z2_ = input * b2_ - a2_ * output;
-    return output;
+std::array<sample_t,4> biquad::processSample(const std::array<sample_t,4>& in) {
+    __m256 X_avx;
+    std::array<sample_t,4> out;
+
+        // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
+        X_avx = _mm256_set_ps(in[0], in[1], in[2], in[3],z1_,z2_, 0.0f, 0.0f);
+
+        // Multiplicar la primera fila de A por X
+        __m256 result1 = _mm256_mul_ps(A_row_1, X_avx);
+        out[0] = horizontal_sum_avx(result1);
+        
+        __m256 result2 = _mm256_mul_ps(A_row_2, X_avx);
+        out[1] = horizontal_sum_avx(result2);
+    
+        __m256 result3 = _mm256_mul_ps(A_row_3, X_avx);
+        out[2] = horizontal_sum_avx(result3);
+        
+        __m256 result4 = _mm256_mul_ps(A_row_4, X_avx);
+        out[3] = horizontal_sum_avx(result4);
+        
+        // Actualizar los estados intermedios (z1_, z2_)
+        
+        z1_ = b1_ * in[3] - a1_ * out[3] + b2_ * in[2] - a2_ * out[2];
+        z2_ = b2_ * in[3] - a2_ * out[3];
+        
+    return out;
 }

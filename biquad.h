@@ -38,7 +38,7 @@ public:
     bool process(jack_nframes_t nframes, const sample_t* in, sample_t* out);
 
     // Método para procesar una sola muestra
-    sample_t processSample(sample_t input);
+    std::array<sample_t,4> processSample(const std::array<sample_t,4>& input);
 };
 
 #endif  // BIQUAD_H
