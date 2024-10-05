@@ -1,5 +1,6 @@
-#include "cascade.h"
+
 #include <cstring>  // Para memcpy
+#include "cascade.h"
 
 // Constructor
 cascade::cascade(const std::vector<std::vector<sample_t>>& filter_coeffs) {
@@ -10,27 +11,38 @@ cascade::cascade(const std::vector<std::vector<sample_t>>& filter_coeffs) {
     }
 }
 
-// Procesar el bloque de datos utilizando la función `process` con SIMD optimizado
+// Procesar el bloque de datos usando punteros directos para evitar memcpy y swap
 bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
-    std::vector<sample_t> intermediate_buffer_1(nframes); // Buffer intermedio para las muestras procesadas
-    std::vector<sample_t> intermediate_buffer_2(nframes); // Otro buffer para la salida temporal
-
-    // Copiar la entrada al buffer intermedio para el primer filtro
-    std::memcpy(intermediate_buffer_1.data(), in, sizeof(sample_t) * nframes);
-
-    // Procesar a través de cada biquad en cascada
-    for (auto& filter : filters_) {
-        filter->process(nframes, intermediate_buffer_1.data(), intermediate_buffer_2.data());  // Usar SIMD para procesar todo el bloque
-
-        // Intercambiar los buffers para la siguiente etapa del filtro
-        std::swap(intermediate_buffer_1, intermediate_buffer_2);
+    const sample_t* input_ptr = in;
+    sample_t* output_ptr = out;
+    
+    // Si solo hay un filtro, procesamos directamente de 'in' a 'out'
+    if (filters_.size() == 1) {
+        filters_[0]->process(nframes, input_ptr, output_ptr);
+        return true;
     }
 
-    // Copiar el resultado final al buffer de salida
-    std::memcpy(out, intermediate_buffer_1.data(), sizeof(sample_t) * nframes);
+    // Si hay más de un filtro, usamos un buffer intermedio
+    std::vector<sample_t> intermediate_buffer(nframes);
 
+    // Procesar la primera etapa, escribir en el buffer intermedio
+    filters_[0]->process(nframes, input_ptr, intermediate_buffer.data());
+
+    // Si solo hay dos filtros, procesamos de buffer intermedio a 'out'
+    if (filters_.size() == 2) {
+        filters_[1]->process(nframes, intermediate_buffer.data(), output_ptr);
+        return true;
+    }
+
+    // Si hay tres filtros, procesamos con dos pasos intermedios
+    filters_[1]->process(nframes, intermediate_buffer.data(), output_ptr);  // Filtro 2
+    filters_[2]->process(nframes, output_ptr, intermediate_buffer.data());  // Filtro 3
+
+    // Copiamos el resultado final a 'out'
+    std::memcpy(out, intermediate_buffer.data(), sizeof(sample_t) * nframes);
     return true;
 }
+
 
 
 // // Procesar el bloque de datos utilizando loop unrolling (8 muestras por iteración)

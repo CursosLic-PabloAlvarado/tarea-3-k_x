@@ -144,13 +144,13 @@ int main(int argc, char *argv[]) {
                     case 'c': {
                         set_mode = 'c';  // Filtro
                         client.setMode(set_mode);  // Actualiza el modo en el cliente
-                        std::cout << "Filtrando audio" << std::endl;
+                        std::cout << "Aplicando filtrado en cascada" << std::endl;
                     } break;
                     
                     case 't': { //test para filtro de segundo orden con biquad
                         set_mode='t';
                         client.setMode(set_mode);
-                        std::cout << "Probando clase biquad con filtro predeterminado" << std:: endl;
+                        std::cout << "Filtrado Biquad predeterminado: pasabajos" << std:: endl;
                     }break;
 
                     case 'r': {

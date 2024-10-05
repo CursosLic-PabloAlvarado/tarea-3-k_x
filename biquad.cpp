@@ -77,7 +77,6 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
         __m256 result2 = _mm256_mul_ps(A_row_2, X_avx);
         float sum2 = horizontal_sum_avx(result2);
         out[i+1] = sum2;
-        std::cout<<out[i+1]<<std::endl;
         __m256 result3 = _mm256_mul_ps(A_row_3, X_avx);
         out[i+2] = horizontal_sum_avx(result3);
         
@@ -90,8 +89,6 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
         z1_ = b1_ * in[i+3] - a1_ * sum3 + b2_ * in[i+2] - a2_ * out[i+2];
         z2_ = b2_ * in[i+3] - a2_ * out[i+3];
         
-
-        std::cout<<"z1 "<<out[i+3]<<" z2 "<<z2_<<std::endl;
 
         i += simd_size;  // de 4 en 4
     }
