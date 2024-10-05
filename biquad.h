@@ -10,8 +10,6 @@ class biquad : public jack::client {
 public:
     // Coeficientes del filtro
     sample_t b0_, b1_, b2_, a1_, a2_;
-    sample_t a_, b_, c_; //parametros para la implementación optimizada
-    sample_t zi_;
     // Variables de estado
     sample_t z1_, z2_;
     char set_mode_;
