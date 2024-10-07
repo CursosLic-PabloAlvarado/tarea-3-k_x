@@ -98,12 +98,9 @@ bool filter_client::process(jack_nframes_t nframes, const sample_t* const in, sa
 
                 while (inptr != end_ptr) {
                     // Procesar cada muestra individualmente con el biquad
-                    std::array<sample_t,4> sample = biquad_filter_->processSample({*inptr,*(inptr+1),*(inptr+2),*(inptr+3)});
-                    *outptr++ = sample[0];
-                    *outptr++ = sample[1];
-                    *outptr++ = sample[2];
-                    *outptr++ = sample[3];
+                    biquad_filter_->processSample(inptr,outptr);
                     inptr=inptr+4;
+                    outptr=outptr+4;
                 }
             }
             break;

@@ -37,8 +37,8 @@ public:
     // Método para procesar un bloque de muestras
     bool process(jack_nframes_t nframes, const sample_t* in, sample_t* out);
 
-    // Método para procesar una sola muestra
-    std::array<sample_t,4> processSample(const std::array<sample_t,4>& input);
+    // Método para procesar una sola muestra de 4
+    void processSample(const sample_t* in, sample_t* out);
 };
 
 #endif  // BIQUAD_H

@@ -59,37 +59,6 @@ float horizontal_sum_avx(__m256 vec) {
 
 // Método para procesar un bloque de datos con AVX
 bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
-    size_t simd_size = 4;  // Procesamos 4 muestras a la vez
-    size_t i = 0;
-
-    // Vector para almacenar las 4 entradas (x[n], x[n+1], x[n+2], x[n+3]) y los estados (z1_, z2_)
-    __m256 X_avx;
-
-    while (i + simd_size <= nframes) {
-        // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
-        X_avx = _mm256_set_ps(in[i], in[i+1], in[i+2], in[i+3],z1_,z2_, 0.0f, 0.0f);
-
-        // Multiplicar la primera fila de A por X
-        __m256 result1 = _mm256_mul_ps(A_row_1, X_avx);
-        out[i] = horizontal_sum_avx(result1);;
-        
-        __m256 result2 = _mm256_mul_ps(A_row_2, X_avx);
-        out[i+1] = horizontal_sum_avx(result2);;
-    
-        __m256 result3 = _mm256_mul_ps(A_row_3, X_avx);
-        out[i+2] = horizontal_sum_avx(result3);
-        
-        __m256 result4 = _mm256_mul_ps(A_row_4, X_avx);
-        out[i+3] = horizontal_sum_avx(result4);
-        
-        // Actualizar los estados intermedios (z1_, z2_)
-        
-        z1_ = b1_ * in[i+3] - a1_ * out[i+3] + b2_ * in[i+2] - a2_ * out[i+2];
-        z2_ = b2_ * in[i+3] - a2_ * out[i+3];
-        
-
-        i += simd_size;  // de 4 en 4
-    }
 
     return true;
 }
@@ -98,10 +67,8 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
 
 // Método para procesar una sola muestra
-std::array<sample_t,4> biquad::processSample(const std::array<sample_t,4>& in) {
+void biquad::processSample(const sample_t* in, sample_t* out) {
     __m256 X_avx;
-    std::array<sample_t,4> out;
-
         // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
         X_avx = _mm256_set_ps(in[0], in[1], in[2], in[3],z1_,z2_, 0.0f, 0.0f);
 
@@ -122,6 +89,4 @@ std::array<sample_t,4> biquad::processSample(const std::array<sample_t,4>& in) {
         
         z1_ = b1_ * in[3] - a1_ * out[3] + b2_ * in[2] - a2_ * out[2];
         z2_ = b2_ * in[3] - a2_ * out[3];
-        
-    return out;
 }

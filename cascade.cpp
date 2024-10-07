@@ -45,30 +45,26 @@ cascade::cascade(const std::vector<std::vector<sample_t>>& filter_coeffs) {
 
 
 
-// Procesar el bloque de datos utilizando loop unrolling (8 muestras por iteración)
 bool cascade::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) {
-   const sample_t *inptr=in;
-   sample_t *outptr=out;
-   const sample_t *const end_ptr=in+nframes;
+    const sample_t* inptr = in;
+    sample_t* outptr = out;
+    const sample_t* const end_ptr = in + nframes;
 
-    // Copiar la entrada al buffer intermedio
+    // Procesar las muestras en bloques de 4
     while (inptr != end_ptr) {
-            std::array<sample_t,4> sample = {*inptr,*(inptr+1),*(inptr+2),*(inptr+3)};
-
-            // Aplicamos cada filtro biquad en cascada
-            for (auto& filter : filters_) {
-                sample = filter->processSample(sample);
-            }
-
-            *outptr++ = sample[0];
-            *outptr++ = sample[1];
-            *outptr++ = sample[2];
-            *outptr++ = sample[3];
-            inptr = inptr+4;
-
+        // Aplicamos cada filtro biquad en cascada
+        for (auto& filter : filters_) {
+            // Pasamos punteros a las 4 muestras
+            filter->processSample(inptr, outptr);
         }
+
+        // Avanzar punteros de entrada y salida en bloques de 4
+        inptr=inptr+4;
+        outptr=outptr+4;
+    }
 
     return true;
 }
+
 
 
