@@ -13,8 +13,6 @@ public:
     sample_t b0_, b1_, b2_, a1_, a2_; //parametros del filtro
     sample_t a_, b_, c_,d_,e_,f_, h_, i_, j_; //parametros para la implementación optimizada
     sample_t z1_, z2_;
-    __m256 b0_avx, b1_avx, b2_avx, a1_avx, a2_avx;
-    __m256 a_avx, b_avx, c_avx;  // Nuevos coeficientes precargados en AVX
     __m256 A_row_1;
     __m256 A_row_2;
     __m256 A_row_3;
