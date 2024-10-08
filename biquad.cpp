@@ -41,7 +41,7 @@ void biquad::setCoefficients(const std::vector<sample_t>& coeffs) {
     z2_ = 0.0f;
 }
 
-float horizontal_sum_avx(__m256 vec) {
+inline __attribute__((always_inline)) float horizontal_sum_avx(__m256 vec) {
     // Suma los elementos adyacentes dentro de cada mitad de 128 bits
     __m128 low = _mm256_castps256_ps128(vec); // Baja parte de vec (4 floats)
     __m128 high = _mm256_extractf128_ps(vec, 1); // Alta parte de vec (4 floats)
@@ -64,6 +64,7 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 
     // Vector para almacenar las 4 entradas (x[n], x[n+1], x[n+2], x[n+3]) y los estados (z1_, z2_)
     __m256 X_avx;
+    
 
     while (i + simd_size <= nframes) {
         // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
@@ -83,6 +84,9 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
         out[i+3] = horizontal_sum_avx(result4);
         
         // Actualizar los estados intermedios (z1_, z2_)
+
+        
+
         
         z1_ = b1_ * in[i+3] - a1_ * out[i+3] + b2_ * in[i+2] - a2_ * out[i+2];
         z2_ = b2_ * in[i+3] - a2_ * out[i+3];
@@ -100,6 +104,12 @@ bool biquad::process(jack_nframes_t nframes, const sample_t* in, sample_t* out) 
 // Método para procesar una sola muestra
 std::array<sample_t,4> biquad::processSample(const std::array<sample_t,4>& in) {
     __m256 X_avx;
+    // __m256 z1_signal;
+    // __m256 z1_coeff;
+
+    // __m256 z2_signal;
+    // __m256 z2_coeff;
+
     std::array<sample_t,4> out;
 
         // Cargar las 4 entradas en el vector X (junto con z1_ y z2_)
@@ -119,6 +129,15 @@ std::array<sample_t,4> biquad::processSample(const std::array<sample_t,4>& in) {
         out[3] = horizontal_sum_avx(result4);
         
         // Actualizar los estados intermedios (z1_, z2_)
+
+        // z1_signal = _mm256_set_ps(in[3], out[3], in[2], out[2], 0, 0, 0, 0);
+        // z1_coeff = _mm256_set_ps(b1_, -a1_,b2_, -a2_,0, 0, 0, 0);
+
+        // z2_signal = _mm256_set_ps(in[3], out[3], 0, 0, 0, 0, 0, 0);
+        // z2_coeff = _mm256_set_ps(b2_, -a2_, 0, 0, 0, 0, 0, 0);
+
+        // z1_=horizontal_sum_avx(_mm256_mul_ps(z1_coeff,z1_signal));
+        // z2_=horizontal_sum_avx(_mm256_mul_ps(z2_coeff,z2_signal));
         
         z1_ = b1_ * in[3] - a1_ * out[3] + b2_ * in[2] - a2_ * out[2];
         z2_ = b2_ * in[3] - a2_ * out[3];
