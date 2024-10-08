@@ -67,9 +67,10 @@ static void BM_Biquad_Process(benchmark::State& state) {
         // Asegúrate de que no excedas el tamaño de input
         if (i + 3 < size) {
             // Crear un std::array para las cuatro muestras
-            std::array<sample_t, 4> inputSamples = { input[i], input[i + 1], input[i + 2], input[i + 3] };
+            float inputSamples[4] = { input[i], input[i + 1], input[i + 2], input[i + 3] };
             // Llamar a processSample
-            std::array<sample_t, 4> outputSamples = dut.processSample(inputSamples);
+            float outputSamples[4]; 
+            dut.processSample(inputSamples, outputSamples);
             
             // Almacenar los resultados en el arreglo output
             output[i] = outputSamples[0];
