@@ -31,7 +31,7 @@ C=[b0 0 0 0 1 0;
 z1=0;
 z2=0;
 
-x=[1 1 1 0 zeros(1,36)];
+x=[1 0 0 0 zeros(1,36)];
 
 
 y=[];
@@ -54,6 +54,7 @@ end
 
 
 stem(y);
+title('Respuesta Impulsional de Filtro Paralelizado')
 
 ##filtro normal
 w1=0;
@@ -61,18 +62,18 @@ w2=0;
 tic
 x = [x zeros(1, 40 - length(x))];
 
-for n = 1:40  % Comienza en n=2 para evitar ¡ndice negativo en n-1
+for n = 1:40  % Comienza en n=2 para evitar Ã­ndice negativo en n-1
 
-    % Implementaci¢n de las ecuaciones
-    w(n) = b0 * x(n) + w1;               % C lculo de y[n]
-    w1 = b1 * x(n) - a1 * w(n) + w2;  % C lculo de w1[n]
-    w2 = b2 * x(n) - a2 * w(n);              % C lculo de w2[n]
+    % ImplementaciÃ³n de las ecuaciones
+    w(n) = b0 * x(n) + w1;               % CÃ¡lculo de y[n]
+    w1 = b1 * x(n) - a1 * w(n) + w2;  % CÃ¡lculo de w1[n]
+    w2 = b2 * x(n) - a2 * w(n);              % CÃ¡lculo de w2[n]
 
 end
 
-w=w'
+w=w';
 x=x';
 figure;
-stem(w)
 
-
+stem(w);
+title('Respuesta Impulsional de Filtro No Paralelizado')
