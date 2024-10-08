@@ -60,9 +60,25 @@ static void BM_Biquad_Process(benchmark::State& state) {
   float input[size];
   float output[size];
   
+  typedef float sample_t;
+
   for (auto _ : state) {
-    dut.process(size,input,output); 
-  }
+    for (int i = 0; i < size; i += 4) { // Procesar de a 4 muestras
+        // Asegúrate de que no excedas el tamaño de input
+        if (i + 3 < size) {
+            // Crear un std::array para las cuatro muestras
+            std::array<sample_t, 4> inputSamples = { input[i], input[i + 1], input[i + 2], input[i + 3] };
+            // Llamar a processSample
+            std::array<sample_t, 4> outputSamples = dut.processSample(inputSamples);
+            
+            // Almacenar los resultados en el arreglo output
+            output[i] = outputSamples[0];
+            output[i + 1] = outputSamples[1];
+            output[i + 2] = outputSamples[2];
+            output[i + 3] = outputSamples[3];
+        }
+    }
+}
   
   state.SetItemsProcessed(size);  // Optional: Report number of items processed
   state.SetComplexityN(size);     // Optional: Analyze time complexity
